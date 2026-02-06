@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>滴定分析計算器 | Titration Analysis Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧐 滴定分析計算器</h1>
+            <p class="subtitle">Titration Analysis Calculator</p>
+            <p class="description">專業化學分析工具，自動計算樣品含量與消耗體積。</p>
+        </header>
+
+        <main>
+            <section class="calculator-card">
+                <div class="card-header">
+                    <h2>實驗數據輸入</h2>
+                </div>
+                
+                <div class="input-grid">
+                    <div class="input-group" id="group-a">
+                        <label for="initial-reading">滴定管初始讀數 (A)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="initial-reading" step="0.01" placeholder="0.00">
+                            <span class="unit">mL</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group" id="group-b">
+                        <label for="final-reading">滴定管最終讀數 (B)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="final-reading" step="0.01" placeholder="0.00">
+                            <span class="unit">mL</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group" id="group-c">
+                        <label for="sample-weight">樣品重量 (C)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="sample-weight" step="0.0001" placeholder="0.0000">
+                            <span class="unit">g</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group" id="group-f">
+                        <label for="factor">換算因子 (F) <small>(如滴定度/莫耳質量)</small></label>
+                        <div class="input-wrapper">
+                            <input type="number" id="factor" step="0.0001" value="1.0000">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="error-msg" id="error-display"></div>
+
+                <hr>
+
+                <div class="result-section">
+                    <div class="result-item">
+                        <span class="result-label">消耗體積 (V):</span>
+                        <span class="result-value" id="v-diff">0.00</span>
+                        <span class="result-unit">mL</span>
+                    </div>
+                    <div class="result-main">
+                        <span class="result-label">最終分析結果:</span>
+                        <span class="result-value highlighted" id="final-result">0.0000</span>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="add-record" class="btn-primary">保存此紀錄</button>
+                </div>
+            </section>
+
+            <section class="history-section">
+                <div class="section-header">
+                    <h2>實驗紀錄表 (History)</h2>
+                    <button id="export-csv" class="btn-secondary">匯出 CSV</button>
+                </div>
+                <div class="table-container">
+                    <table id="history-table">
+                        <thead>
+                            <tr>
+                                <th>案號</th>
+                                <th>初始 (mL)</th>
+                                <th>最終 (mL)</th>
+                                <th>消耗 (mL)</th>
+                                <th>重量 (g)</th>
+                                <th>結果</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Records added here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="average-display" class="average-box">
+                    平均值 (Average): <span id="avg-result">---</span>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 2026 Molty Lab Assistant | Designed for Bally</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
