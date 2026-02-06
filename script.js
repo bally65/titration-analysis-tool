@@ -55,14 +55,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Reset Functionality ---
-    resetBtn.addEventListener('click', () => {
-        inputA.value = "";
-        inputB.value = "";
-        inputC.value = "";
-        // We keep the Factor (F) as it is usually constant for a series of tests
-        calculate();
-        inputA.focus();
-    });
+    if (resetBtn) {
+        resetBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log("Resetting inputs...");
+            inputA.value = "";
+            inputB.value = "";
+            inputC.value = "";
+            // We keep the Factor (F) as it is usually constant for a series of tests
+            calculate();
+            inputA.focus();
+        });
+    } else {
+        console.error("Reset button not found in DOM");
+    }
 
     // --- History Management ---
     addBtn.addEventListener('click', () => {
