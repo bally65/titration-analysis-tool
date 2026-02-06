@@ -12,13 +12,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const addBtn = document.getElementById('add-record');
     const resetBtn = document.getElementById('reset-btn');
     const fullResetBtn = document.getElementById('full-reset-btn');
+    const clearHistoryBtn = document.getElementById('clear-history');
     const exportCsvBtn = document.getElementById('export-csv');
     const exportWordBtn = document.getElementById('export-word');
     const exportPdfBtn = document.getElementById('export-pdf');
     const historyTableBody = document.querySelector('#history-table tbody');
     const avgDisplay = document.getElementById('avg-result');
 
-    let records = [];
+    // Load from LocalStorage
+    let records = JSON.parse(localStorage.getItem('titration_records')) || [];
+    updateTable();
 
     // --- Calculation Logic ---
     function calculate() {
@@ -30,16 +33,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const a = parseFloat(inputA.value) || 0;
         const b = parseFloat(inputB.value) || 0;
         const c = parseFloat(inputC.value) || 0;
-        const f = parseFloat(inputF.value) || 1;
+        const f = parseFloat(inputF.value) || 3.2440;
 
         errorDisplay.textContent = "";
         inputB.classList.remove('invalid');
         inputC.classList.remove('invalid');
 
         // Validation
-        if (inputB.value && b < a) {
-            errorDisplay.textContent = "⚠️ 最終讀數不可小於初始讀數";
-            inputB.classList.add('invalid');
+        if (inputB.value && b < a && (b-a) !== 0) {
+            // Keep warning if B < A, but absolute value will be used anyway
+            errorDisplay.textContent = "💡 已自動切換為絕對值計算";
         }
 
         if (inputC.value && c === 0) {
@@ -52,8 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
         displayV.textContent = v.toFixed(2);
 
         if (c > 0) {
-            // 公式：(V * 3.244) / 樣品重量
-            // 這裡使用 F 作為變數，預設值已改為 3.244
             const result = (v * f) / c;
             displayResult.textContent = result.toFixed(4);
         } else {
@@ -74,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
             inputA.value = "";
             inputB.value = "";
             inputC.value = "";
-            // We keep the Factor (F)
             calculate();
             inputName.focus();
         });
@@ -87,9 +87,19 @@ document.addEventListener('DOMContentLoaded', () => {
             inputA.value = "";
             inputB.value = "";
             inputC.value = "";
-            inputF.value = "3.2440"; // Reset Factor to new default
+            inputF.value = "3.2440";
             calculate();
             inputName.focus();
+        });
+    }
+
+    if (clearHistoryBtn) {
+        clearHistoryBtn.addEventListener('click', () => {
+            if (confirm("確定要清空所有實驗紀錄嗎？此動作無法復原。")) {
+                records = [];
+                saveToLocalStorage();
+                updateTable();
+            }
         });
     }
 
@@ -97,15 +107,15 @@ document.addEventListener('DOMContentLoaded', () => {
     addBtn.addEventListener('click', () => {
         const name = inputName.value || "未命名樣品";
         let a = parseFloat(inputA.value);
-        if (isNaN(a)) a = 0.00; // Force 0.00 if empty
+        if (isNaN(a)) a = 0.00;
 
         const b = parseFloat(inputB.value);
         const c = parseFloat(inputC.value);
-        const f = parseFloat(inputF.value);
-        const v = b - a;
+        const f = parseFloat(inputF.value) || 3.2440;
+        const v = Math.abs(b - a);
         const res = parseFloat(displayResult.textContent);
 
-        if (isNaN(b) || isNaN(c) || Math.abs(v) < 0 || c <= 0) {
+        if (isNaN(b) || isNaN(c) || c <= 0) {
             alert("請輸入完整的最終讀數與重量數據再保存。");
             return;
         }
@@ -115,18 +125,19 @@ document.addEventListener('DOMContentLoaded', () => {
             name: name,
             a: a.toFixed(2),
             b: b.toFixed(2),
-            v: Math.abs(v).toFixed(2),
+            v: v.toFixed(2),
             c: c.toFixed(4),
             result: res.toFixed(4)
         };
 
         records.push(record);
+        saveToLocalStorage();
         updateTable();
-        
-        // Reset inputs (optional, keeping for sequence)
-        // inputA.value = inputB.value; // Sequential titration often starts from last reading
-        // inputB.value = "";
     });
+
+    function saveToLocalStorage() {
+        localStorage.setItem('titration_records', JSON.stringify(records));
+    }
 
     function updateTable() {
         historyTableBody.innerHTML = "";
@@ -136,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td style="font-family:sans-serif; font-weight:bold; color:#999">#${index + 1}</td>
-                <td style="font-family:sans-serif; color:#2c3e50">${rec.name}</td>
+                <td style="font-family:sans-serif; color:#2c3e50; min-width:120px">${rec.name}</td>
                 <td>${rec.a}</td>
                 <td>${rec.b}</td>
                 <td style="color:#e67e22; font-weight:bold">${rec.v}</td>
@@ -157,6 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.deleteRecord = function(id) {
         records = records.filter(r => r.id !== id);
+        saveToLocalStorage();
         updateTable();
     };
 
