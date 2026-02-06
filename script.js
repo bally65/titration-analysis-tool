@@ -91,13 +91,13 @@ document.addEventListener('DOMContentLoaded', () => {
         records.forEach((rec, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>#${index + 1}</td>
+                <td style="font-family:sans-serif; font-weight:bold; color:#999">#${index + 1}</td>
                 <td>${rec.a}</td>
                 <td>${rec.b}</td>
-                <td>${rec.v}</td>
+                <td style="color:#e67e22; font-weight:bold">${rec.v}</td>
                 <td>${rec.c}</td>
-                <td style="font-weight:bold; color:#2980b9">${rec.result}</td>
-                <td><button class="delete-btn" onclick="deleteRecord(${rec.id})">刪除</button></td>
+                <td class="result-cell">${rec.result}</td>
+                <td><button class="delete-btn" onclick="deleteRecord(${rec.id})">移除</button></td>
             `;
             historyTableBody.appendChild(row);
             sum += parseFloat(rec.result);
