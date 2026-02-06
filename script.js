@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const inputName = document.getElementById('sample-name');
     const inputA = document.getElementById('initial-reading');
     const inputB = document.getElementById('final-reading');
     const inputC = document.getElementById('sample-weight');
@@ -69,29 +70,32 @@ document.addEventListener('DOMContentLoaded', () => {
     if (resetBtn) {
         resetBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            inputName.value = "";
             inputA.value = "";
             inputB.value = "";
             inputC.value = "";
             // We keep the Factor (F)
             calculate();
-            inputA.focus();
+            inputName.focus();
         });
     }
 
     if (fullResetBtn) {
         fullResetBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            inputName.value = "";
             inputA.value = "";
             inputB.value = "";
             inputC.value = "";
             inputF.value = "3.2440"; // Reset Factor to new default
             calculate();
-            inputA.focus();
+            inputName.focus();
         });
     }
 
     // --- History Management ---
     addBtn.addEventListener('click', () => {
+        const name = inputName.value || "未命名樣品";
         let a = parseFloat(inputA.value);
         if (isNaN(a)) a = 0.00; // Force 0.00 if empty
 
@@ -101,16 +105,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const v = b - a;
         const res = parseFloat(displayResult.textContent);
 
-        if (isNaN(b) || isNaN(c) || v < 0 || c <= 0) {
+        if (isNaN(b) || isNaN(c) || Math.abs(v) < 0 || c <= 0) {
             alert("請輸入完整的最終讀數與重量數據再保存。");
             return;
         }
 
         const record = {
             id: Date.now(),
+            name: name,
             a: a.toFixed(2),
             b: b.toFixed(2),
-            v: v.toFixed(2),
+            v: Math.abs(v).toFixed(2),
             c: c.toFixed(4),
             result: res.toFixed(4)
         };
@@ -131,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td style="font-family:sans-serif; font-weight:bold; color:#999">#${index + 1}</td>
+                <td style="font-family:sans-serif; color:#2c3e50">${rec.name}</td>
                 <td>${rec.a}</td>
                 <td>${rec.b}</td>
                 <td style="color:#e67e22; font-weight:bold">${rec.v}</td>
@@ -158,9 +164,9 @@ document.addEventListener('DOMContentLoaded', () => {
     exportCsvBtn.addEventListener('click', () => {
         if (records.length === 0) return;
         
-        let csvContent = "data:text/csv;charset=utf-8,案號,初始(mL),最終(mL),消耗(mL),重量(g),結果\n";
+        let csvContent = "data:text/csv;charset=utf-8,案號,樣品名稱,初始(mL),最終(mL),消耗(mL),重量(g),結果\n";
         records.forEach((r, i) => {
-            csvContent += `${i+1},${r.a},${r.b},${r.v},${r.c},${r.result}\n`;
+            csvContent += `${i+1},${r.name},${r.a},${r.b},${r.v},${r.c},${r.result}\n`;
         });
 
         const encodedUri = encodeURI(csvContent);
@@ -184,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <table border='1' style='width:100%; border-collapse:collapse; text-align:center'>
                     <thead style='background-color:#f2f2f2'>
                         <tr>
-                            <th>案號</th><th>初始 (mL)</th><th>最終 (mL)</th><th>消耗 (mL)</th><th>重量 (g)</th><th>結果</th>
+                            <th>案號</th><th>樣品名稱</th><th>初始 (mL)</th><th>最終 (mL)</th><th>消耗 (mL)</th><th>重量 (g)</th><th>結果</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -193,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
         records.forEach((r, i) => {
             content += `
                 <tr>
-                    <td>#${i+1}</td><td>${r.a}</td><td>${r.b}</td><td>${r.v}</td><td>${r.c}</td><td>${r.result}</td>
+                    <td>#${i+1}</td><td>${r.name}</td><td>${r.a}</td><td>${r.b}</td><td>${r.v}</td><td>${r.c}</td><td>${r.result}</td>
                 </tr>
             `;
         });
@@ -227,11 +233,11 @@ document.addEventListener('DOMContentLoaded', () => {
         doc.text("Titration Analysis Report", 14, 15);
         
         const tableData = records.map((r, i) => [
-            `#${i+1}`, r.a, r.b, r.v, r.c, r.result
+            `#${i+1}`, r.name, r.a, r.b, r.v, r.c, r.result
         ]);
 
         doc.autoTable({
-            head: [['ID', 'Initial (mL)', 'Final (mL)', 'Vol (mL)', 'Weight (g)', 'Result']],
+            head: [['ID', 'Name', 'Initial (mL)', 'Final (mL)', 'Vol (mL)', 'Weight (g)', 'Result']],
             body: tableData,
             startY: 20,
         });
