@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorDisplay = document.getElementById('error-display');
     
     const addBtn = document.getElementById('add-record');
+    const resetBtn = document.getElementById('reset-btn');
     const exportBtn = document.getElementById('export-csv');
     const historyTableBody = document.querySelector('#history-table tbody');
     const avgDisplay = document.getElementById('avg-result');
@@ -51,6 +52,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Events for real-time update ---
     [inputA, inputB, inputC, inputF].forEach(el => {
         el.addEventListener('input', calculate);
+    });
+
+    // --- Reset Functionality ---
+    resetBtn.addEventListener('click', () => {
+        inputA.value = "";
+        inputB.value = "";
+        inputC.value = "";
+        // We keep the Factor (F) as it is usually constant for a series of tests
+        calculate();
+        inputA.focus();
     });
 
     // --- History Management ---
