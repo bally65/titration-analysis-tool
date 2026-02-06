@@ -213,12 +213,26 @@ h1 { color: var(--primary-color); }
     margin-bottom: 20px;
 }
 
+.export-group {
+    display: flex;
+    gap: 8px;
+}
+
 .btn-secondary {
-    background: #eee;
-    border: 1px solid #ddd;
-    padding: 8px 16px;
+    background: #fff;
+    border: 1px solid #3498db;
+    color: #3498db;
+    padding: 8px 12px;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background: #3498db;
+    color: white;
 }
 
 /* --- Table Enhancements --- */

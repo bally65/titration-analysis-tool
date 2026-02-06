@@ -11,7 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const addBtn = document.getElementById('add-record');
     const resetBtn = document.getElementById('reset-btn');
     const fullResetBtn = document.getElementById('full-reset-btn');
-    const exportBtn = document.getElementById('export-csv');
+    const exportCsvBtn = document.getElementById('export-csv');
+    const exportWordBtn = document.getElementById('export-word');
+    const exportPdfBtn = document.getElementById('export-pdf');
     const historyTableBody = document.querySelector('#history-table tbody');
     const avgDisplay = document.getElementById('avg-result');
 
@@ -149,8 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
         updateTable();
     };
 
-    // --- Export ---
-    exportBtn.addEventListener('click', () => {
+    // --- Export CSV ---
+    exportCsvBtn.addEventListener('click', () => {
         if (records.length === 0) return;
         
         let csvContent = "data:text/csv;charset=utf-8,案號,初始(mL),最終(mL),消耗(mL),重量(g),結果\n";
@@ -165,5 +167,75 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    });
+
+    // --- Export Word (.doc) ---
+    exportWordBtn.addEventListener('click', () => {
+        if (records.length === 0) return;
+
+        let content = `
+            <html>
+            <head><meta charset='utf-8'></head>
+            <body>
+                <h2 style='text-align:center'>滴定實驗紀錄報告</h2>
+                <table border='1' style='width:100%; border-collapse:collapse; text-align:center'>
+                    <thead style='background-color:#f2f2f2'>
+                        <tr>
+                            <th>案號</th><th>初始 (mL)</th><th>最終 (mL)</th><th>消耗 (mL)</th><th>重量 (g)</th><th>結果</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        records.forEach((r, i) => {
+            content += `
+                <tr>
+                    <td>#${i+1}</td><td>${r.a}</td><td>${r.b}</td><td>${r.v}</td><td>${r.c}</td><td>${r.result}</td>
+                </tr>
+            `;
+        });
+
+        content += `
+                    </tbody>
+                </table>
+                <p style='text-align:right'><b>平均值: ${avgDisplay.textContent}</b></p>
+                <p style='font-size:0.8em; color:#888'>匯出時間: ${new Date().toLocaleString()}</p>
+            </body>
+            </html>
+        `;
+
+        const blob = new Blob(['\ufeff', content], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'titration_report.doc';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+
+    // --- Export PDF ---
+    exportPdfBtn.addEventListener('click', () => {
+        if (records.length === 0) return;
+        
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        doc.text("Titration Analysis Report", 14, 15);
+        
+        const tableData = records.map((r, i) => [
+            `#${i+1}`, r.a, r.b, r.v, r.c, r.result
+        ]);
+
+        doc.autoTable({
+            head: [['ID', 'Initial (mL)', 'Final (mL)', 'Vol (mL)', 'Weight (g)', 'Result']],
+            body: tableData,
+            startY: 20,
+        });
+
+        const finalY = doc.lastAutoTable.finalY;
+        doc.text(`Average Result: ${avgDisplay.textContent}`, 14, finalY + 10);
+        
+        doc.save("titration_report.pdf");
     });
 });
