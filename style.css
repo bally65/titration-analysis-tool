@@ -165,6 +165,23 @@ h1 { color: var(--primary-color); }
     border-color: #999;
 }
 
+.btn-danger {
+    background-color: transparent;
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-right: 10px;
+    transition: all 0.2s;
+}
+
+.btn-danger:hover {
+    background-color: var(--error-color);
+    color: white;
+}
+
 .history-section {
     background: var(--card-bg);
     padding: 30px;
