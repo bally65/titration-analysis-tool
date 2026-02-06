@@ -145,9 +145,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         records.forEach((rec, index) => {
             const row = document.createElement('tr');
+            const safeName = rec.name || "未命名樣品";
             row.innerHTML = `
                 <td style="font-family:sans-serif; font-weight:bold; color:#999">#${index + 1}</td>
-                <td style="font-family:sans-serif; color:#2c3e50; min-width:120px">${rec.name}</td>
+                <td style="font-family:sans-serif; color:#2c3e50; min-width:120px">${safeName}</td>
                 <td>${rec.a}</td>
                 <td>${rec.b}</td>
                 <td style="color:#e67e22; font-weight:bold">${rec.v}</td>
