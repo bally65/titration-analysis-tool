@@ -46,10 +46,13 @@ document.addEventListener('DOMContentLoaded', () => {
             inputC.classList.add('invalid');
         }
 
-        const v = b - a;
+        // --- 強制邏輯：V 改為絕對值 ---
+        const v = Math.abs(b - a);
         displayV.textContent = v.toFixed(2);
 
-        if (c > 0 && v >= 0) {
+        if (c > 0) {
+            // 公式：(V * 3.244) / 樣品重量
+            // 這裡使用 F 作為變數，預設值已改為 3.244
             const result = (v * f) / c;
             displayResult.textContent = result.toFixed(4);
         } else {
@@ -81,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
             inputA.value = "";
             inputB.value = "";
             inputC.value = "";
-            inputF.value = "1.0000"; // Reset Factor to default
+            inputF.value = "3.2440"; // Reset Factor to new default
             calculate();
             inputA.focus();
         });
