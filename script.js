@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const addBtn = document.getElementById('add-record');
     const resetBtn = document.getElementById('reset-btn');
+    const fullResetBtn = document.getElementById('full-reset-btn');
     const exportBtn = document.getElementById('export-csv');
     const historyTableBody = document.querySelector('#history-table tbody');
     const avgDisplay = document.getElementById('avg-result');
@@ -63,16 +64,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (resetBtn) {
         resetBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            console.log("Resetting inputs...");
             inputA.value = "";
             inputB.value = "";
             inputC.value = "";
-            // We keep the Factor (F) as it is usually constant for a series of tests
+            // We keep the Factor (F)
             calculate();
             inputA.focus();
         });
-    } else {
-        console.error("Reset button not found in DOM");
+    }
+
+    if (fullResetBtn) {
+        fullResetBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            inputA.value = "";
+            inputB.value = "";
+            inputC.value = "";
+            inputF.value = "1.0000"; // Reset Factor to default
+            calculate();
+            inputA.focus();
+        });
     }
 
     // --- History Management ---
