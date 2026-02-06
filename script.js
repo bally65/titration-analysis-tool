@@ -18,6 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Calculation Logic ---
     function calculate() {
+        // If Initial Reading is empty, treat as 0.00
+        if (inputA.value === "") {
+            inputA.placeholder = "0.00";
+        }
+        
         const a = parseFloat(inputA.value) || 0;
         const b = parseFloat(inputB.value) || 0;
         const c = parseFloat(inputC.value) || 0;
@@ -72,15 +77,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- History Management ---
     addBtn.addEventListener('click', () => {
-        const a = parseFloat(inputA.value);
+        let a = parseFloat(inputA.value);
+        if (isNaN(a)) a = 0.00; // Force 0.00 if empty
+
         const b = parseFloat(inputB.value);
         const c = parseFloat(inputC.value);
         const f = parseFloat(inputF.value);
         const v = b - a;
         const res = parseFloat(displayResult.textContent);
 
-        if (isNaN(a) || isNaN(b) || isNaN(c) || v < 0 || c <= 0) {
-            alert("請輸入完整的有效數據再保存。");
+        if (isNaN(b) || isNaN(c) || v < 0 || c <= 0) {
+            alert("請輸入完整的最終讀數與重量數據再保存。");
             return;
         }
 
